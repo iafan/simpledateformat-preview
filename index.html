@@ -95,7 +95,7 @@
       var queryParams = 'fmt=' + encodeURIComponent(fmt) + '&lang=' + encodeURIComponent(lang);
       var xhr = new XMLHttpRequest();
       xhr.addEventListener('load', processRenderResult);
-      xhr.open('GET', '/render?' + queryParams);
+      xhr.open('GET', 'render?' + queryParams);
       xhr.send();
       if (options && options.preventPushState) {
         return;
