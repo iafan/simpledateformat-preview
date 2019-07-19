@@ -1,0 +1,120 @@
+<html>
+  <head>
+    <style>
+      body {
+        font-family: sans-serif;
+        font-size: 20px;
+        color: #888;
+        margin: 1em;
+      }
+
+      h1 {
+        font-weight: normal;
+        font-size: 1.2em;
+      }
+
+      p {
+        margin: 1.5em 0;
+      }
+
+      input,
+      #output {
+        font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+        font-size: 24px;
+      }
+
+      ::placeholder {
+        color: #ccc;
+      }
+
+      label {
+        min-width: 8em;
+        display: inline-block;
+      }
+
+      input {
+        width: 25em;
+        padding: 0.2em 0.3em;
+      }
+
+      #output {
+        padding: 0.2em 0.3em;
+        border: 1px solid #ddd;
+        display: inline-block;
+        box-sizing: border-box;
+        width: 25em;
+        color: blue;
+      }
+
+      .footer {
+        margin-top: 5em;
+        font-size: 0.7em;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Java SimpleDateFormat() Formatting Preview</h1>
+    <p>
+      <label for="fmt">Format string:</label>
+      <input id="fmt" placeholder="yyyy-MM-dd hh:mm:ss" />
+    </p>
+    <p>
+      <label for="lang">Language tag:</label>
+      <input id="lang" placeholder="pt-br" />
+    </p>
+    <p>
+      <label for="output">Output:</label>
+      <span id="output"></span>
+    </p>
+    <p class="footer">
+      <a href="https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html"
+        >See the official Java documentation on format string syntax</a
+      >
+    </p>
+  </body>
+  <script>
+    var $fmt = document.getElementById('fmt');
+    var $lang = document.getElementById('lang');
+    var $output = document.getElementById('output');
+
+    // set up event listeners
+    $fmt.addEventListener('input', onChange);
+    $lang.addEventListener('input', onChange);
+    window.addEventListener('hashchange', onHashChange);
+
+    // initialize from current hash on load
+    onHashChange();
+
+    function processRenderResult() {
+      $output.innerText = this.responseText || '\u00A0'; // show NBSP on empty string
+    }
+
+    function render(options) {
+      var fmt = $fmt.value;
+      var lang = $lang.value;
+      var queryParams = 'fmt=' + encodeURIComponent(fmt) + '&lang=' + encodeURIComponent(lang);
+      var xhr = new XMLHttpRequest();
+      xhr.addEventListener('load', processRenderResult);
+      xhr.open('GET', '/render?' + queryParams);
+      xhr.send();
+      if (options && options.preventPushState) {
+        return;
+      }
+      history.pushState({}, undefined, '#' + queryParams);
+    }
+
+    var changeTimeout;
+    function onChange() {
+      clearTimeout(changeTimeout);
+      changeTimeout = setTimeout(render, 500);
+    }
+
+    function onHashChange() {
+      var h = window.location.hash.substr(1); // remove leading '#'
+      var params = new URLSearchParams(h);
+      $fmt.value = params.get('fmt');
+      $lang.value = params.get('lang');
+      render({ preventPushState: true });
+    }
+  </script>
+</html>
